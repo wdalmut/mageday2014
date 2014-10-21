@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js - The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+                <section>
+                    <h3>Scale out our PHP application with ElastiBeanstalk</h3>
+                </section>
+                <section>
+                    <h2>About me</h2>
+                    <ul>
+                        <li>Cofounder <a href="https://www.corley.it/">Corley S.r.l. - @CorleyCloud</a></li>
+                        <li>Cofounder <a href="https://www.upcloo.com">UpCloo LTD - @UpCloo</a></li>
+                        <li><a href="https://github.com/wdalmut">wdalmut</a> on Github</li>
+                        <li><a href="https://twitter.com/walterdalmut">walterdalmut</a> on Twitter<br></li>
+                        <li></li>
+                        <li><a href="http://www.cloudparty.it">www.cloudparty.it</a> - PHP &amp; Cloud @ Genova - 24 Oct</li>
+                        <li><a href="http://internetof.it">internetof.it</a> - Internet Of Things! @ Turin [CFP] - 15 Nov</li>
+                        <li><a href="http://www.cloudconf.it">www.cloudconf.it</a> - CloudComputing @ Turin [CFP ASAP]</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Scale your app workers and web apps</h3>
+                    <ul>
+                        <li class="fragment">Queue Daemons</li>
+                        <li class="fragment">Load balanced web applications</li>
+                    </ul>
+                    <br>
+                    <br>
+                    <p class="fragment">Mainly for Software Oriented Architecture</p>
+                </section>
+                <section>
+                    <h3>Different running environment per app</h3>
+                    <img src="img/all-app.png" />
+                    <small>Typically you run: Production, Testing, Development</small>
+                </section>
+                <section>
+                    <h3>Different versions per environment</h3>
+                    <img src="img/versions.png" />
+                    <small>Easy distributed app deploy/rollback and testing/production application management</small>
+                </section>
+                <section>
+                    <h3>Different configuration per environment</small>
+                    <img src="img/configs.png" />
+                    <small>Upgrade your environment and switch your production without downtime</small>
+                </section>
+                <section>
+                    <h2>My production environment</h2>
+                    <img src="img/prod1.png"/>
+                </section>
+                <section>
+                    <h2>Add a new environment</h2>
+                    <img src="img/prod2.png"/>
+                </section>
+                <section>
+                    <h2>Swap production environment</h2>
+                    <img src="img/prod3.png"/>
+                    <small>ElasticBeanstalk swap env URLs in order to simplify  the upgrade</small>
+                </section>
+                <section>
+                    <h2>Destroy your old environment</h2>
+                    <img src="img/prod4.png"/>
+                    <h2>COST-SAVING!</h2>
+                    <p><small>it is easier create and destroy environments than upgrade them</small></p>
+                </section>
+                <section>
+                    <h2>Environment Management</h2>
+                    <img src="img/welcome.png"/>
+                </section>
+                <section>
+                    <h2>Your scaling policies</h2>
+                    <img src="img/options.png" />
+                </section>
+                <section>
+                    <h2>Application variables</h2>
+                    <p>All environment variables are ported to your application in $_SERVER</p>
+                    <p>You can pass everything like: Memcached and Mysql configurations etc.</p>
+                </section>
+                <section>
+                    <h3>Use Composer for Dependencies</h3>
+                    <p>ElasticBeanstalk uses composer in order to prepare your application</p>
+                    <p>Use composer hooks in order to connect your variables to your configuration</p>
+                </section>
+                <section>
+                    <h2>Composer hooks</h2>
+                    <pre><code data-trim>
+{
+    /** other composer configs **/
+    "scripts": {
+        "post-update-cmd": [
+            "Corley\\Deploy\\Magento::localConf"
+        ],
+        "post-install-cmd": [
+            "Corley\\Deploy\\Magento::localConf"
+        ]
+    },
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Need more customizations?</h3>
+                    <p>Create a folder in your project root with name <code>.ebextensions</code>
+                        and append your configuration files with extension <code>.config</code></p>
+                    <p>ElasticBeanstalk will use them during the application provisioning</p>
+                </section>
+                <section>
+                    <h3>Cronjobs runs on the leader instance only</h3>
+                    <p><code>.ebextensions/05_cron_jobs.config</code></p>
+                    <pre><code data-trim>
+container_commands:
+  01_magento_cron_job:
+    command: "cat .ebextensions/magento_cron_job.txt &gt; /etc/cron.d/magento_cron_job &amp;&amp; chmod 644 /etc/cron.d/magento_cron_job"
+    leader_only: true
+                    </code></pre>
+                    <p><small>All configuration files are just simple YAML files</small></p>
+                </section>
+                <section>
+                    <h2>Monitor your environment</h2>
+                    <img src="img/monitor.png"/>
+                    <p>You can monitor many metrics with CloudWatch</p>
+                    <p><small>UDP/IP CloudWatch agent on local machine: https://github.com/wdalmut/cloudwatch-agent</small></p>
+                </section>
+                <section>
+                    <h3>What we are missing?</h3>
+                    <h1 class="fragment">Logs!</h1>
+                </section>
+                <section>
+                    <h3>Grab all active instances logs</h3>
+                    <img src="img/logs.png"/>
+                </section>
+                <section>
+                    <h3>But my application logs?</h3>
+                    <pre><code data-trim>
+commands:
+    21_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/bundlelogs.d
+    22_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/systemtaillogs.d
+    23_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/taillogs.d
+    24_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/publishlogs.d
+                    </code></pre>
+                    <p><code>.ebextensions/06_prepare_logs.config</code></p>
+                </section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: "night", // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
