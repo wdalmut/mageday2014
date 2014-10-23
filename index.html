@@ -4,10 +4,10 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>reveal.js - The HTML Presentation Framework</title>
+		<title>Scale your PHP Application with ElasticBeanstalk</title>
 
-		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-		<meta name="author" content="Hakim El Hattab">
+		<meta name="description" content="Scale your PHP Application with ElasticBeanstalk">
+		<meta name="author" content="Walter Dal Mut">
 
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -43,7 +43,7 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
                 <section>
-                    <h3>Scale out our PHP application with ElastiBeanstalk</h3>
+                    <h3>Scale out our PHP application with ElasticBeanstalk</h3>
                 </section>
                 <section>
                     <h2>About me</h2>
@@ -52,13 +52,16 @@
                         <li>Cofounder <a href="https://www.upcloo.com">UpCloo LTD - @UpCloo</a></li>
                         <li><a href="https://github.com/wdalmut">wdalmut</a> on Github</li>
                         <li><a href="https://twitter.com/walterdalmut">walterdalmut</a> on Twitter<br></li>
-                        <li></li>
-                        <li><a href="http://www.cloudparty.it">www.cloudparty.it</a> - PHP &amp; Cloud @ Genova - 24 Oct</li>
+                    </ul>
+                    <br>
+                    <br>
+                    <ul>
                         <li><a href="http://internetof.it">internetof.it</a> - Internet Of Things! @ Turin [CFP] - 15 Nov</li>
                         <li><a href="http://www.cloudconf.it">www.cloudconf.it</a> - CloudComputing @ Turin [CFP ASAP]</li>
                     </ul>
                 </section>
                 <section>
+                    <h2>ElasticBeanstalk</h2>
                     <h3>Scale your app workers and web apps</h3>
                     <ul>
                         <li class="fragment">Queue Daemons</li>
@@ -66,15 +69,30 @@
                     </ul>
                     <br>
                     <br>
-                    <p class="fragment">Mainly for Software Oriented Architecture</p>
+                    <p class="fragment">Mainly for Service Oriented Architecture</p>
                 </section>
                 <section>
-                    <h3>Different running environment per app</h3>
+                    <h3>Autoscaling applied to web applications</h3>
+                    <img src="img/layers.png"/>
+                </section>
+                <section>
+                    <h3>Scale apps is not simple</h3>
+                    <ul>
+                        <li class="fragment">How to handle dev/testing/production? (dynamic env)</li>
+                        <li class="fragment">How to install/update softwares? (dynamic env)</li>
+                        <li class="fragment">How to handle user sessions? (more than one node)</li>
+                        <li class="fragment">How to handle/tail logs? (dynamic env)</li>
+                        <li class="fragment">How to monitor all instances (dynamic env)</li>
+                        <li class="fragment">And more... (all things are moving!)</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Run different environment per app</h3>
                     <img src="img/all-app.png" />
                     <small>Typically you run: Production, Testing, Development</small>
                 </section>
                 <section>
-                    <h3>Different versions per environment</h3>
+                    <h3>Different app versions per environment</h3>
                     <img src="img/versions.png" />
                     <small>Easy distributed app deploy/rollback and testing/production application management</small>
                 </section>
@@ -82,6 +100,9 @@
                     <h3>Different configuration per environment</small>
                     <img src="img/configs.png" />
                     <small>Upgrade your environment and switch your production without downtime</small>
+                </section>
+                <section>
+                    <h2>Production Env Swap</h2>
                 </section>
                 <section>
                     <h2>My production environment</h2>
@@ -110,6 +131,9 @@
                     <h2>Your scaling policies</h2>
                     <img src="img/options.png" />
                 </section>
+                <section data-background="img/scaling-policies.png">
+                    <h2 class="fragment" style="color: black">Scaling made easy</h2>
+                </section>
                 <section>
                     <h2>Application variables</h2>
                     <p>All environment variables are ported to your application in $_SERVER</p>
@@ -118,7 +142,7 @@
                 <section>
                     <h3>Use Composer for Dependencies</h3>
                     <p>ElasticBeanstalk uses composer in order to prepare your application</p>
-                    <p>Use composer hooks in order to connect your variables to your configuration</p>
+                    <p>Use composer hooks in order to connect all env variables to your app configuration</p>
                 </section>
                 <section>
                     <h2>Composer hooks</h2>
@@ -127,12 +151,30 @@
     /** other composer configs **/
     "scripts": {
         "post-update-cmd": [
-            "Corley\\Deploy\\Magento::localConf"
+            "Corley\\Deploy\\Magento::updateConf"
         ],
         "post-install-cmd": [
-            "Corley\\Deploy\\Magento::localConf"
+            "Corley\\Deploy\\Magento::updateConf"
         ]
     },
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <pre><code data-trim>
+&lt;?php
+namespace Corley\Deploy;
+
+use Composer\Script\Event;
+
+class Magento
+{
+    public static function updateConf(Event $event)
+    {
+        if (array_key_exists("OVERWRITE_CONF", $_SERVER)) {
+            // Update your config file when $_SERVER contains "OVERWRITE_CONF" variable
+        }
+    }
 }
                     </code></pre>
                 </section>
@@ -186,6 +228,16 @@ commands:
                     </code></pre>
                     <p><code>.ebextensions/06_prepare_logs.config</code></p>
                 </section>
+                <section>
+                    <h3>Collecting all application logs</h3>
+                    <p>AWS ELB can store all logs into a S3 bucket using a scheduled system</p>
+                    <img src="img/elb-logs.png"/>
+                    <p>COST-SAVING! we don't need to propagate logs via "rsyslog"</p>
+                </section>
+                <section>
+                    <h2>Thanks for listening</h2>
+                    <h1>Any question?</h1>
+                </section>
 			</div>
 
 		</div>
@@ -221,6 +273,12 @@ commands:
 				]
 			});
 
+            Reveal.configure({
+                keyboard: {
+                    38: "prev",
+                    40: "next"
+                }
+            });
 		</script>
 
 	</body>
