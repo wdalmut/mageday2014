@@ -46,19 +46,27 @@
                     <h3>Scale out our PHP application with ElasticBeanstalk</h3>
                 </section>
                 <section>
-                    <h2>About me</h2>
+                    <h2>About us</h2>
                     <ul>
-                        <li>Cofounder <a href="https://www.corley.it/">Corley S.r.l. - @CorleyCloud</a></li>
-                        <li>Cofounder <a href="https://www.upcloo.com">UpCloo LTD - @UpCloo</a></li>
+                        <li>Cofounder <a href="https://www.corley.it/">Corley S.r.l.</a> - <a href="http://twitter.com/CorleyCloud">@CorleyCloud</a></li>
+                        <li>Cofounder <a href="https://www.upcloo.com">UpCloo LTD</a> - <a href="http://twitter.com/UpCloo">@UpCloo</a></li>
                         <li><a href="https://github.com/wdalmut">wdalmut</a> on Github</li>
-                        <li><a href="https://twitter.com/walterdalmut">walterdalmut</a> on Twitter<br></li>
+                        <li><a href="https://twitter.com/walterdalmut">walterdalmut</a> on Twitter</li>
                     </ul>
-                    <br>
-                    <br>
+                    <br />
+                    <br />
                     <ul>
                         <li><a href="http://internetof.it">internetof.it</a> - Internet Of Things! @ Turin [CFP] - 15 Nov</li>
                         <li><a href="http://www.cloudconf.it">www.cloudconf.it</a> - CloudComputing @ Turin [CFP ASAP]</li>
                     </ul>
+                    <br />
+                    <br />
+                    <ul>
+                        <li>Cofounder & CTO <a href="https://www.bitbull.it/">Bitbull S.r.l.</a> - <a href="http://twitter.com/Bitbull_it">@Bitbull_it</a></li>
+                        <li><a href="https://github.com/bitbull-team">bitbull-team</a> on Github</li>
+                        <li><a href="https://twitter.com/kesonno">kesonno</a> on Twitter</li>
+                    </ul>
+
                 </section>
                 <section>
                     <h2>ElasticBeanstalk</h2>
@@ -97,7 +105,7 @@
                     <small>Easy distributed app deploy/rollback and testing/production application management</small>
                 </section>
                 <section>
-                    <h3>Different configuration per environment</small>
+                    <h3>Different configuration per environment</h3>
                     <img src="img/configs.png" />
                     <small>Upgrade your environment and switch your production without downtime</small>
                 </section>
@@ -135,50 +143,6 @@
                     <h2 class="fragment" style="color: black">Scaling made easy</h2>
                 </section>
                 <section>
-                    <h2>Application variables</h2>
-                    <p>All environment variables are ported to your application in $_SERVER</p>
-                    <p>You can pass everything like: Memcached and Mysql configurations etc.</p>
-                </section>
-                <section>
-                    <h3>Use Composer for Dependencies</h3>
-                    <p>ElasticBeanstalk uses composer in order to prepare your application</p>
-                    <p>Use composer hooks in order to connect all env variables to your app configuration</p>
-                </section>
-                <section>
-                    <h2>Composer hooks</h2>
-                    <pre><code data-trim>
-{
-    /** other composer configs **/
-    "scripts": {
-        "post-update-cmd": [
-            "Corley\\Deploy\\Magento::updateConf"
-        ],
-        "post-install-cmd": [
-            "Corley\\Deploy\\Magento::updateConf"
-        ]
-    },
-}
-                    </code></pre>
-                </section>
-                <section>
-                    <pre><code data-trim>
-&lt;?php
-namespace Corley\Deploy;
-
-use Composer\Script\Event;
-
-class Magento
-{
-    public static function updateConf(Event $event)
-    {
-        if (array_key_exists("OVERWRITE_CONF", $_SERVER)) {
-            // Update your config file when $_SERVER contains "OVERWRITE_CONF" variable
-        }
-    }
-}
-                    </code></pre>
-                </section>
-                <section>
                     <h3>Need more customizations?</h3>
                     <p>Create a folder in your project root with name <code>.ebextensions</code>
                         and append your configuration files with extension <code>.config</code></p>
@@ -188,10 +152,10 @@ class Magento
                     <h3>Cronjobs runs on the leader instance only</h3>
                     <p><code>.ebextensions/05_cron_jobs.config</code></p>
                     <pre><code data-trim>
-container_commands:
-  01_magento_cron_job:
-    command: "cat .ebextensions/magento_cron_job.txt &gt; /etc/cron.d/magento_cron_job &amp;&amp; chmod 644 /etc/cron.d/magento_cron_job"
-    leader_only: true
+                        container_commands:
+                        01_magento_cron_job:
+                        command: "cat .ebextensions/magento_cron_job.txt &gt; /etc/cron.d/magento_cron_job &amp;&amp; chmod 644 /etc/cron.d/magento_cron_job"
+                        leader_only: true
                     </code></pre>
                     <p><small>All configuration files are just simple YAML files</small></p>
                 </section>
@@ -212,19 +176,19 @@ container_commands:
                 <section>
                     <h3>But my application logs?</h3>
                     <pre><code data-trim>
-commands:
-    21_application_logs:
-        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-        cwd: /opt/elasticbeanstalk/tasks/bundlelogs.d
-    22_application_logs:
-        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-        cwd: /opt/elasticbeanstalk/tasks/systemtaillogs.d
-    23_application_logs:
-        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-        cwd: /opt/elasticbeanstalk/tasks/taillogs.d
-    24_application_logs:
-        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-        cwd: /opt/elasticbeanstalk/tasks/publishlogs.d
+                        commands:
+                        21_application_logs:
+                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+                        cwd: /opt/elasticbeanstalk/tasks/bundlelogs.d
+                        22_application_logs:
+                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+                        cwd: /opt/elasticbeanstalk/tasks/systemtaillogs.d
+                        23_application_logs:
+                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+                        cwd: /opt/elasticbeanstalk/tasks/taillogs.d
+                        24_application_logs:
+                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+                        cwd: /opt/elasticbeanstalk/tasks/publishlogs.d
                     </code></pre>
                     <p><code>.ebextensions/06_prepare_logs.config</code></p>
                 </section>
@@ -234,6 +198,127 @@ commands:
                     <img src="img/elb-logs.png"/>
                     <p>COST-SAVING! we don't need to propagate logs via "rsyslog"</p>
                 </section>
+
+                <section>
+                    <h2>Application variables</h2>
+                    <p>All environment variables are ported to your application in $_SERVER</p>
+                    <p>You can pass everything like: Memcached and Mysql configurations etc.</p>
+                </section>
+
+                <section>
+                    <h2>The Magento side</h2>
+                </section>
+
+                <section>
+                    <h3>Use Composer for dependencies</h3>
+                    <p>ElasticBeanstalk uses Composer in order to prepare your application</p>
+                    <p>So, we can use composer hooks in order to connect all env variables to our Magento configuration</p>
+                    <br />
+                    <p><small>http://github.com/magento-hackathon/magento-composer-installer</small></p>
+                </section>
+                <section>
+                    <h3>Composer hooks</h3>
+                    <pre><code data-trim>
+{
+    /** other composer configs **/
+    "scripts": {
+        "post-update-cmd": [
+            "Corley\\Deploy\\Magento::localConf"
+        ],
+        "post-install-cmd": [
+            "Corley\\Deploy\\Magento::localConf"
+        ]
+    },
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <pre><code data-trim>
+&lt;?php
+namespace Corley\Deploy;
+
+use Composer\Script\Event;
+
+class Magento
+{
+    public static function localConf(Event $event)
+    {
+        // Generate a local.xml based on environment variables
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h3>The golden rule:</h3>
+                    <h2>The filesystem is not reliable</h2>
+                </section>
+
+                <section>
+                    <h3>Keep media in a shared location</h3>
+                    <p class="fragment">ok but, what could we use?</p>
+                </section>
+
+                <section>
+                    <h3>NFS?</h3>
+                    <ul>
+                        <li class="fragment">is a single point of failure</li>
+                        <li class="fragment">is not at web scale</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Amazon S3?</h3>
+                    <ul>
+                        <li class="fragment">does not work out-of-the-box</li>
+                        <li class="fragment">maybe in future...</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Database?</h3>
+                    <p class="fragment">
+                        <img src="img/OhCrap.png" style="border: none; width: 50%;" />
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Why not?</h3>
+                    <ul>
+                        <li class="fragment">
+                            work out-of-the-box (and is dead simple to configure)<br />
+                            <img src="img/media_storage_config.png" />
+                        </li>
+                        <li class="fragment">read access to db only once for each instance...</li>
+                        <li class="fragment">...may be reduced to only one using a CDN (CloudFront)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Cache and sessions</h3>
+                    <ul>
+                        <li>All cache backend and session handlers except <strong>"File"</strong> are fine</li>
+                        <li>Best options are Redis and Memcached (both available via Amazon ElastiCache)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>TO BE DONE</h3>
+                    <ul>
+                        <li class="fragment">sitemap.xml</li>
+                        <li class="fragment">Exchange data for third-party integration (ERP, CRM etc.)</li>
+                        <li class="fragment">
+                            Integration with services (eg. bank gateway) that require IPs whitelist
+                            <ul>
+                                <li class="fragment">Use a proxy</li>
+                                <li class="fragment">IP reservation</li>
+                            </ul>
+                        </li>
+                        <li class="fragment">Store media on Amazon S3</li>
+                        <li class="fragment">Use DynamoDB session handler</li>
+                    </ul>
+                </section>
+
                 <section>
                     <h2>Thanks for listening</h2>
                     <h1>Any question?</h1>
