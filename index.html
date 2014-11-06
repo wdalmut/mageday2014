@@ -48,6 +48,13 @@
                 <section>
                     <h2>About us</h2>
                     <ul>
+                        <li>Cofounder &amp; CTO <a href="https://www.bitbull.it/">Bitbull S.r.l.</a> - <a href="http://twitter.com/Bitbull_it">@Bitbull_it</a></li>
+                        <li><a href="https://github.com/bitbull-team">bitbull-team</a> on Github</li>
+                        <li><a href="https://twitter.com/kesonno">kesonno</a> on Twitter</li>
+                    </ul>
+                    <br />
+                    <br />
+                    <ul>
                         <li>Cofounder <a href="https://www.corley.it/">Corley S.r.l.</a> - <a href="http://twitter.com/CorleyCloud">@CorleyCloud</a></li>
                         <li>Cofounder <a href="https://www.upcloo.com">UpCloo LTD</a> - <a href="http://twitter.com/UpCloo">@UpCloo</a></li>
                         <li><a href="https://github.com/wdalmut">wdalmut</a> on Github</li>
@@ -59,14 +66,6 @@
                         <li><a href="http://internetof.it">internetof.it</a> - Internet Of Things! @ Turin [CFP] - 15 Nov</li>
                         <li><a href="http://www.cloudconf.it">www.cloudconf.it</a> - CloudComputing @ Turin [CFP ASAP]</li>
                     </ul>
-                    <br />
-                    <br />
-                    <ul>
-                        <li>Cofounder & CTO <a href="https://www.bitbull.it/">Bitbull S.r.l.</a> - <a href="http://twitter.com/Bitbull_it">@Bitbull_it</a></li>
-                        <li><a href="https://github.com/bitbull-team">bitbull-team</a> on Github</li>
-                        <li><a href="https://twitter.com/kesonno">kesonno</a> on Twitter</li>
-                    </ul>
-
                 </section>
                 <section>
                     <h2>ElasticBeanstalk</h2>
@@ -84,6 +83,17 @@
                     <img src="img/layers.png"/>
                 </section>
                 <section>
+                    <h3>Autoscaling in practice</h3>
+                    <img class="fragment" width="100px" src="img/cubo.png"/>
+                    <img class="fragment" width="100px" src="img/cubo.png"/>
+                    <img class="fragment" width="100px" src="img/cubo.png"/>
+                    <img class="fragment" width="100px" src="img/cubo.png"/>
+                    <img class="fragment" width="100px" src="img/cubo.png"/>
+                    <h4 class="fragment">Dynamically added and removed!</h4>
+                    <h5 class="fragment">Machine to Machine</h5>
+                    <h5 class="fragment">Closed-loop control system</h5>
+                </section>
+                <section>
                     <h3>Scale apps is not simple</h3>
                     <ul>
                         <li class="fragment">How to handle dev/testing/production? (dynamic env)</li>
@@ -98,6 +108,18 @@
                     <h3>Run different environment per app</h3>
                     <img src="img/all-app.png" />
                     <small>Typically you run: Production, Testing, Development</small>
+                </section>
+                <section>
+                    <h3>How to deploy the app?</h3>
+                    <ul>
+                        <li class="fragment">ElasticBeanstalk update app using Git on push</li>
+                        <li class="fragment">ElasticBeanstalk update app using a pre-packaged Zip file</li>
+                    </ul>
+                    <br><br>
+                    <h4 class="fragment">ElasticBeankstalk offers also API</h4>
+                    <ul>
+                        <li class="fragment">Git Push -&gt; Jenkins Build ZIP package -&gt; ElasticBeankstalk Deploy</li>
+                    </ul>
                 </section>
                 <section>
                     <h3>Different app versions per environment</h3>
@@ -136,14 +158,20 @@
                     <img src="img/welcome.png"/>
                 </section>
                 <section>
-                    <h2>Your scaling policies</h2>
+                    <h2>Application variables</h2>
+                    <p>All environment variables are ported to your application in $_SERVER</p>
+                    <p>You can pass everything like: Memcached and Mysql configurations etc.</p>
+                </section>
+
+                <section>
+                    <h2>Control your Application Configurations</h2>
                     <img src="img/options.png" />
                 </section>
                 <section data-background="img/scaling-policies.png">
                     <h2 class="fragment" style="color: black">Scaling made easy</h2>
                 </section>
                 <section>
-                    <h3>Need more customizations?</h3>
+                    <h3>We need more customizations!</h3>
                     <p>Create a folder in your project root with name <code>.ebextensions</code>
                         and append your configuration files with extension <code>.config</code></p>
                     <p>ElasticBeanstalk will use them during the application provisioning</p>
@@ -152,10 +180,10 @@
                     <h3>Cronjobs runs on the leader instance only</h3>
                     <p><code>.ebextensions/05_cron_jobs.config</code></p>
                     <pre><code data-trim>
-                        container_commands:
-                        01_magento_cron_job:
-                        command: "cat .ebextensions/magento_cron_job.txt &gt; /etc/cron.d/magento_cron_job &amp;&amp; chmod 644 /etc/cron.d/magento_cron_job"
-                        leader_only: true
+container_commands:
+    01_magento_cron_job:
+    command: "cat .ebextensions/magento_cron_job.txt &gt; /etc/cron.d/magento_cron_job &amp;&amp; chmod 644 /etc/cron.d/magento_cron_job"
+    leader_only: true
                     </code></pre>
                     <p><small>All configuration files are just simple YAML files</small></p>
                 </section>
@@ -176,34 +204,28 @@
                 <section>
                     <h3>But my application logs?</h3>
                     <pre><code data-trim>
-                        commands:
-                        21_application_logs:
-                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-                        cwd: /opt/elasticbeanstalk/tasks/bundlelogs.d
-                        22_application_logs:
-                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-                        cwd: /opt/elasticbeanstalk/tasks/systemtaillogs.d
-                        23_application_logs:
-                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-                        cwd: /opt/elasticbeanstalk/tasks/taillogs.d
-                        24_application_logs:
-                        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
-                        cwd: /opt/elasticbeanstalk/tasks/publishlogs.d
+commands:
+    21_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/bundlelogs.d
+    22_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/systemtaillogs.d
+    23_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/taillogs.d
+    24_application_logs:
+        command: echo "/var/app/current/var/log/*.log" &gt; myapp.conf
+        cwd: /opt/elasticbeanstalk/tasks/publishlogs.d
                     </code></pre>
                     <p><code>.ebextensions/06_prepare_logs.config</code></p>
                 </section>
-                <section>
+                <!--<section>
                     <h3>Collecting all application logs</h3>
                     <p>AWS ELB can store all logs into a S3 bucket using a scheduled system</p>
                     <img src="img/elb-logs.png"/>
                     <p>COST-SAVING! we don't need to propagate logs via "rsyslog"</p>
-                </section>
-
-                <section>
-                    <h2>Application variables</h2>
-                    <p>All environment variables are ported to your application in $_SERVER</p>
-                    <p>You can pass everything like: Memcached and Mysql configurations etc.</p>
-                </section>
+                </section>-->
 
                 <section>
                     <h2>The Magento side</h2>
